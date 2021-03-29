@@ -84,30 +84,29 @@ int main()
 	string a; //строка
 	string b; //строка буфер
 	int n = 0;
-	int i = 0;
 
 	cout << "Введите выражение(без пробелов): " << endl;
 	getline(cin, a);
 
 	int j = a.size();
 	string* x = new string[j];
-	//int* b = new int[j];
-	for (int v = 0; v < j; v++)
+	for (int i = 0; i < j; i++)
 	{
-		if (a[i] != '(' || a[i] != ')' || a[i] != '*' || a[i] != '/' || a[i] != '+' || a[i] != '-')
+		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
 		{
 			b.push_back(a[i]);
+			cout << b << endl;
 		}
 		
 		else
 		{
-			a[n] = b;
-			b = "";
+			n++;
+			x[n] = b;
+			b.clear();
+			cout << x[n] << endl;
 			n++;
 		}
 	}
-	
-	for (int i = 0; i < )
 }
 
 void opred_znaka(string a, int* b[], string* x[], int j)
