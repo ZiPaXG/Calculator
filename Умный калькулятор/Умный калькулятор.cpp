@@ -9,8 +9,7 @@
 
 using namespace std;
 
-void opred_znaka(string a, int* b[], string* x[], int j);
-void del_func(string* x[], int v);
+void del_func(string* x, int v);
 //void priravn(string a, int* b[], string* x[], int j, int i);
 
 //void opred_znaka(string a, string* x[], int j)
@@ -85,7 +84,7 @@ int main()
 	string a; //строка
 	string b; //строка буфер
 	int n = 0;
-	int v = 1; // изначальный размер массива
+	int v = 2; // изначальный размер массива
 
 	cout << "Введите выражение(без пробелов): " << endl;
 	getline(cin, a);
@@ -97,54 +96,64 @@ int main()
 		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
 		{
 			b.push_back(a[i]);
+			cout << b << endl;
+		}
+		
+		else if (i == j - 1 && a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
+		{
+			b.push_back(a[i]);
+			x[n] = b;
+			b.clear();
+			break;
 		}
 		
 		else
 		{
 			x[n] = b;
-			del_func(&x, v);
-			//b.clear();
-			/*cout << x[n] << endl;
-			n++;
+			cout << &x[n] << endl;
+			b.clear();
+			n += 1;
+			del_func(x, v);
 			x[n] = a[i];
-			n++;*/
+			n += 1;
+			del_func(x, v);
 		}
 	}
 }
 
-void del_func(string* x[], int v)
+void del_func(string* x, int v)
 {
+	//создание нового массива
 	string* mas = new string[v + 1];
+	//копирование
 	for (int i = 0; i < v; i++)
 	{
-		mas[i] = *x[i];
+		mas[i] = x[i];
 	}
-	mas[v] = {};
+	//прибавление размера на 1
+	v++;
 	delete[]x;
-	
-	for (int i = 0; i < v; i++)
-	{
-		*x[i] = mas[i];
-	}
+	//копирование из буффера в нужный массив
+	x = mas;
 }
 
-void opred_znaka(string a, int* b[], string* x[], int j)
-{
-	for (int i = 0; i < j; i++)
-	{
-		//priravn(a, b, x, j, i);
-		if (a[i] == '*')
-		{
-			*x[i] = "*";
-		}
-		
-		/*else
-		{
-			*b[i] = (int)a[i] - (int)'0';
-		}*/
-	}
-
-}
+//void opred_znaka(string a, int* b[], string* x[], int j)
+//{
+//	for (int i = 0; i < j; i++)
+//	{
+//		//priravn(a, b, x, j, i);
+//		if (a[i] == '*')
+//		{
+//			*x[i] = "*";
+//		}
+//		
+//		/*else
+//		{
+//			*b[i] = (int)a[i] - (int)'0';
+//		}*/
+//	}
+//
+//}
 
 //void priravn(string a, int* b[], string* x[], int j, int i)
 //{
