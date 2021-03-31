@@ -10,6 +10,7 @@
 using namespace std;
 
 void opred_znaka(string a, int* b[], string* x[], int j);
+void del_func(string* x[], int v);
 //void priravn(string a, int* b[], string* x[], int j, int i);
 
 //void opred_znaka(string a, string* x[], int j)
@@ -84,28 +85,46 @@ int main()
 	string a; //строка
 	string b; //строка буфер
 	int n = 0;
+	int v = 1; // изначальный размер массива
 
 	cout << "Введите выражение(без пробелов): " << endl;
 	getline(cin, a);
 
 	int j = a.size();
-	string* x = new string[j];
+	string* x = new string[v];
 	for (int i = 0; i < j; i++)
 	{
 		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
 		{
 			b.push_back(a[i]);
-			cout << b << endl;
 		}
 		
 		else
 		{
-			n++;
 			x[n] = b;
-			b.clear();
-			cout << x[n] << endl;
+			del_func(&x, v);
+			//b.clear();
+			/*cout << x[n] << endl;
 			n++;
+			x[n] = a[i];
+			n++;*/
 		}
+	}
+}
+
+void del_func(string* x[], int v)
+{
+	string* mas = new string[v + 1];
+	for (int i = 0; i < v; i++)
+	{
+		mas[i] = *x[i];
+	}
+	mas[v] = {};
+	delete[]x;
+	
+	for (int i = 0; i < v; i++)
+	{
+		*x[i] = mas[i];
 	}
 }
 
