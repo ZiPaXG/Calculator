@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void del_func(string* x, int v);
+string* del_func(string* x, const int v);
 //void priravn(string a, int* b[], string* x[], int j, int i);
 
 //void opred_znaka(string a, string* x[], int j)
@@ -84,7 +84,7 @@ int main()
 	string a; //строка
 	string b; //строка буфер
 	int n = 0;
-	int v = 2; // изначальный размер массива
+	int v = 1; // изначальный размер массива
 
 	cout << "Введите выражение(без пробелов): " << endl;
 	getline(cin, a);
@@ -96,7 +96,6 @@ int main()
 		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
 		{
 			b.push_back(a[i]);
-			cout << b << endl;
 		}
 		
 		else if (i == j - 1 && a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
@@ -107,21 +106,31 @@ int main()
 			break;
 		}
 		
+		else if (i == j && a[i] == '(' || a[i] == ')' || a[i] == '*' || a[i] == '/' || a[i] == '+' || a[i] == '-')
+		{
+			x[n] = b;
+			n += 1;
+			x[n] = a[i];
+			break;
+		}
+
 		else
 		{
 			x[n] = b;
-			cout << &x[n] << endl;
 			b.clear();
 			n += 1;
 			del_func(x, v);
+			v++;
 			x[n] = a[i];
 			n += 1;
 			del_func(x, v);
+			v++;
 		}
 	}
 }
 
-void del_func(string* x, int v)
+
+string* del_func(string* x, const int v)
 {
 	//создание нового массива
 	string* mas = new string[v + 1];
@@ -131,10 +140,10 @@ void del_func(string* x, int v)
 		mas[i] = x[i];
 	}
 	//прибавление размера на 1
-	v++;
 	delete[]x;
 	//копирование из буффера в нужный массив
 	x = mas;
+	return x;
 }
 
 //void opred_znaka(string a, int* b[], string* x[], int j)
