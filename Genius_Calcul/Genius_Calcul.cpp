@@ -9,72 +9,9 @@
 
 using namespace std;
 
+string* parsing(int j, int& v, int n, string* x, string b, string a);
 string* del_func(string* x, const int v);
-//void priravn(string a, int* b[], string* x[], int j, int i);
-
-//void opred_znaka(string a, string* x[], int j)
-//{
-//	for (int i = 0; i < j; i++)
-//	{
-//		if (a[i] == '(')
-//		{
-//			*x[i] = "1";
-//		}
-//
-//		else if (a[i] == ')')
-//		{
-//			*x[i] = "2";
-//		}
-//
-//		else if (a[i] == '*' || a[i] == '/')
-//		{
-//			*x[i] = "3";
-//		}
-//
-//		else if (a[i] == '+' || a[i] == '-')
-//		{
-//			*x[i] = "4";
-//		}
-//
-//		else
-//		{
-//			*x[i] = "0";
-//		}
-//	}
-//}
-
-//void opred_znaka(string a, int* b[], string* x[], int j)
-//{
-//	int c = 0;
-//	int f = 0;
-//	int f1 = 0;
-//
-//	for (int i = f; i < j; i++)
-//	{
-//		if (*x[i] == "0" && c == 0)
-//		{
-//			c += 1;
-//			f = i;
-//		}
-//		
-//		else if (*x[i] == "0")
-//		{
-//			c += 1;
-//		}
-//		
-//		else
-//		{
-//			f1 = i-1;
-//			break;
-//		}
-//	}
-//	
-//	for (int i = f; i < f1; i++)
-//	{
-//		string v[50] = {};
-//		v[i] += a[i];
-//	}
-//}
+void check_skob(string* x, int v, int c);
 
 int main()
 {
@@ -83,52 +20,50 @@ int main()
 
 	string a; //строка
 	string b; //строка буфер
-	int n = 0;
+	int n = 0; // счетчик для массива в ф-ции del_func
 	int v = 1; // изначальный размер массива
+	int c = 1; // 
 
 	cout << "Введите выражение(без пробелов): " << endl;
 	getline(cin, a);
 
 	int j = a.size();
 	string* x = new string[v];
+	x = parsing(j, v, n, x, b, a);
+	check_skob(x, v, c);
+}
+
+string* parsing(int j, int& v, int n, string* x, string b, string a)
+{
 	for (int i = 0; i < j; i++)
 	{
 		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
 		{
-			b.push_back(a[i]);
-		}
-
-		else if (i == j - 1 && a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
-		{
-			b.push_back(a[i]);
-			x[n] = b;
-			b.clear();
-			break;
-		}
-
-		else if (i == j - 1 && a[i] == '(' || a[i] == ')' || a[i] == '*' || a[i] == '/' || a[i] == '+' || a[i] == '-')
-		{
-			x[n] = b;
-			n += 1;
-			x[n] = a[i];
-			break;
+			if (i < j - 1)
+				b.push_back(a[i]);
+			else
+			{
+				b.push_back(a[i]);
+				x[n] = b;
+				b.clear();
+			}
 		}
 
 		else
 		{
 			x[n] = b;
 			b.clear();
-			n += 1;
 			x = del_func(x, v);
 			v++;
+			n++;
 			x[n] = a[i];
-			n += 1;
 			x = del_func(x, v);
 			v++;
+			n++;
 		}
 	}
+	return x;
 }
-
 
 string* del_func(string* x, const int v)
 {
@@ -146,51 +81,25 @@ string* del_func(string* x, const int v)
 	return x;
 }
 
-//void opred_znaka(string a, int* b[], string* x[], int j)
-//{
-//	for (int i = 0; i < j; i++)
-//	{
-//		//priravn(a, b, x, j, i);
-//		if (a[i] == '*')
-//		{
-//			*x[i] = "*";
-//		}
-//		
-//		/*else
-//		{
-//			*b[i] = (int)a[i] - (int)'0';
-//		}*/
-//	}
-//
-//}
-
-//void priravn(string a, int* b[], string* x[], int j, int i)
-//{
-//	switch (a[i])
-//	{
-//	case '*':
-//		*x[i] = "*";
-//		break;
-//	case '/':
-//		*x[i] = "/";
-//		break;
-//	case '+':
-//		*x[i] = "+";
-//		break;
-//	case '-':
-//		*x[i] = "-";
-//		break;
-//	case '(':
-//		*x[i] = "(";
-//		break;
-//	case ')':
-//		*x[i] = ")";
-//		break;
-//	default:
-//		*b[i] = (int)a[i] - (int)'0';
-//		break;
-//	}
-//}
+void check_skob(string* x, int v, int c)
+{
+	//создание двумерного массива
+	int** mas = new int* [c];
+	for (int i = 0; i < c; i++)
+	{
+		mas[i] = new int[c];
+	}
+	
+	for (int i = 0; i < c; i++)
+	{
+		for (int j = 0; j < c; j++)
+		{
+			mas[i][j] = 0;
+			cout << mas[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
 //Приоретет: 
 //1 - Скобки
 //2 - Умножение или деление
