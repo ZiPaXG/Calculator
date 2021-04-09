@@ -11,9 +11,8 @@ using namespace std;
 
 string* parsing(int j, int& v, int n, string* x, string b, string a);
 string* plus_func(string* x, const int v);
-string* min_func(string* x, const int v, int a);
+string* min_func(string* x, const int v, int a, int z);
 void check_skob(string* x, int v, int m);
-void plus_mas(string** mas, const int с, const int z);
 void proverka(string* x, int v, int x1, int x2, int m);
 
 int main()
@@ -84,29 +83,33 @@ string* plus_func(string* x, const int v)
 	return x;
 }
 
-string* min_func(string* x, const int v, int a)
+string* min_func(string* c, const int b, int a, int z)
 {
 	//создание нового массива
-	string* mas = new string[v - 2];
+	string* mas = new string[b - 2];
+	int n = 0;
 	
 	//копирование
-	for (int i = 0; i < v-2; i++)
+	for (int i = 0; i < b; i++)
 	{
-		if (i == v - 3)
+		if (i == z)
 		{
-			mas[i] = to_string(a);
+			mas[n] = to_string(a);
+			n++;
+			i += 2;
 		}
 		
 		else
 		{
-			mas[i] = x[i];
+			mas[n] = c[i];
+			n++;
 		}
 	}
 	//прибавление размера на 1
-	delete[]x;
+	delete[]c;
 	//копирование из буффера в нужный массив
-	x = mas;
-	return x;
+	c = mas;
+	return c;
 }
 
 void check_skob(string* x, int v, int m)
@@ -131,46 +134,13 @@ void check_skob(string* x, int v, int m)
 			x2 = i;
 		}
 	}
-	//string** mas = new string*[c];
-	//int n = 0;
-	//for (int i = 0; i < c; i++)
-	//{
-	//	mas[i] = new string[z];
-	//}
-	//
-	//for (int i = 0; i < z; i++)
-	//{
-	//	for (int j = 0; j < c; j++)
-	//	{
-	//		mas[i][j] = '0';
-	//		cout << mas[i][j] << " ";
-	//	}
-	//	cout << endl;
-	//}
-	
-	//for (int i = 0; i < v; i++)
-	//{
-	//	
-	//	if (n > 0 && x[i] == "(")
-	//	{
-	//		mas[n][n - n] = i;
-	//		cout << mas[n][n - n] << endl;
-	//		plus_mas(mas, c, z);
-	//	}
-	//	
-	//	else if (n == 0 && x[i] == "(")
-	//	{
-	//		mas[n][n] = i;
-	//		n++;
-	//	}
-	//	
-	//}
 }
 
 void proverka(string* x, int v, int x1, int x2, int m)
 {
 	int a = 0;
 	int b = 0;
+	int z = 0;
 	int n = 0; // счетчик
 	
 	for (int i = x1 + 1; i < x2; i++) // считаем размер массива скобок
@@ -185,65 +155,106 @@ void proverka(string* x, int v, int x1, int x2, int m)
 		c[n] = x[i];
 		n++;
 	}
-	
+
 	n = 0;
 	
-	for (int i = x1 + 1; i < x2; i++) // проверка знака
+	for (int i = 0; i < sizeof(c); i++) // проверка знака
 	{
-		if (x[i] == "*")
+		if (c[i] == "*")
 		{
-			a = stoi(x[i - 1]) * stoi(x[i + 1]);
-			c = min_func(c, b, a);
+			a = stoi(c[i - 1]) * stoi(c[i + 1]); // идет подсчет выражения
+			z = i - 1; // координата числа для замены вместо выражения
+			c = min_func(c, b, a, z); // ф-ция
 			cout << c[0] << endl;
 		}
-		
-		else if (x[i] == "/")
+
+		else if (c[i] == "/")
 		{
-			a = stoi(x[i - 1]) / stoi(x[i + 1]);
-			c = min_func(c, b, a);
-			cout << c[0] << endl;
+			a = stoi(c[i - 1]) / stoi(c[i + 1]);
+			z = i - 1;
+			c = min_func(c, b, a, z);
+			cout << sizeof(c) << endl;
+			for (int i = 0; i < sizeof(c); i++)
+			{
+				cout << c[i] << endl;
+			}
 		}
-		else if (x[i] == "+")
+	}
+
+	for (int i = 0; i < sizeof(c); i++)
+	{
+		if (c[i] == "+")
 		{
-			a = stoi(x[i - 1]) + stoi(x[i + 1]);
-			c = min_func(c, b, a);
-			cout << c[0] << endl;
+			a = stoi(c[i - 1]) + stoi(c[i + 1]);
+			z = i - 1;
+			c = min_func(c, b, a, z);
+			cout << sizeof(c) << endl;
+			for (int i = 0; i < sizeof(c); i++)
+			{
+				cout << c[i] << endl;
+			}
 		}
-		else if (x[i] == "-")
+		else if (c[i] == "-")
 		{
-			a = stoi(x[i - 1]) - stoi(x[i + 1]);
-			c = min_func(c, b, a);
-			cout << c[0] << endl;
+			a = stoi(c[i - 1]) - stoi(c[i + 1]);
+			z = i - 1;
+			c = min_func(c, b, a, z);
+			cout << sizeof(c) << endl;
+			for (int i = 0; i < sizeof(c); i++)
+			{
+				cout << c[i] << endl;
+			}
 		}
 
 	}
 }
-
-//void plus_mas(string** mas, const int c, const int z)
-//{
-//	//создание нового массива
-//	string** mas1 = new string*[c + 1];
-//	for (int i = 0; i < c + 1; i++)
+//	for (int i = x1 + 1; i < x2; i++) // проверка знака
 //	{
-//		mas[i] = new string[z + 1];
-//	}
-//	
-//	//копирование
-//	for (int i = 0; i < z; i++)
-//	{
-//		for (int j = 0; j < c; j++)
+//		if (c[i] == "*")
 //		{
-//			mas1[i][j] = mas[i][j];
+//			a = stoi(x[i - 1]) * stoi(x[i + 1]); // идет подсчет выражения
+//			z = i - 1; // координата числа для замены вместо выражения
+//			c = min_func(c, b, a, z, x1, x2); // ф-ция
+//			cout << c[0] << endl;
+//		}
+//
+//		else if (c[i] == "/")
+//		{
+//			a = stoi(x[i - 1]) / stoi(x[i + 1]);
+//			z = i - 1;
+//			c = min_func(c, b, a, z, x1, x2);
+//			cout << sizeof(c) << endl;
+//			for (int i = 0; i < sizeof(c); i++)
+//			{
+//				cout << c[i] << endl;
+//			}
 //		}
 //	}
 //	
-//	//прибавление размера на 1
-//	for (int i = 0; i < c; i++)
+//	for (int i = x1+1; i < x2; i++)
 //	{
-//		delete[]mas[i];
+//		if (c[i] == "+")
+//		{
+//			a = stoi(x[i - 1]) + stoi(x[i + 1]);
+//			z = i - 1;
+//			c = min_func(c, b, a, z, x1, x2);
+//			cout << sizeof(c) << endl;
+//			for (int i = 0; i < sizeof(c); i++)
+//			{
+//				cout << c[i] << endl;
+//			}
+//		}
+//		else if (c[i] == "-")
+//		{
+//			a = stoi(x[i - 1]) - stoi(x[i + 1]);
+//			z = i - 1;
+//			c = min_func(c, b, a, z, x1, x2);
+//			cout << sizeof(c) << endl;
+//			for (int i = 0; i < sizeof(c); i++)
+//			{
+//				cout << c[i] << endl;
+//			}
+//		}
+//
 //	}
-//	delete[]mas;
-//	
-//	//копирование из буффера в нужный массив
-//	mas = mas1;
 //}
