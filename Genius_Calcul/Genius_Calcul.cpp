@@ -92,20 +92,29 @@ string* min_func(string* c, const int b, int a, int z)
 	//копирование
 	for (int i = 0; i < b; i++)
 	{
-		if (i == z)
+		if (i == z && b-2 == 1)
 		{
 			mas[n] = to_string(a);
+			cout << mas[n] << endl;
+			break;
+		}
+		
+		else if (i == z)
+		{
+			mas[n] = to_string(a);
+			cout << mas[n] << endl;
 			n++;
 			i += 2;
 		}
-		
+
 		else
 		{
 			mas[n] = c[i];
+			cout << mas[n] << endl;
 			n++;
 		}
 	}
-	//прибавление размера на 1
+	//удаление элементов массива c
 	delete[]c;
 	//копирование из буффера в нужный массив
 	c = mas;
@@ -142,7 +151,7 @@ void proverka(string* x, int v, int x1, int x2, int m)
 	int b = 0;
 	int z = 0;
 	int n = 0; // счетчик
-	
+
 	for (int i = x1 + 1; i < x2; i++) // считаем размер массива скобок
 	{
 		b++;
@@ -158,51 +167,75 @@ void proverka(string* x, int v, int x1, int x2, int m)
 
 	n = 0;
 	
-	for (int i = 0; i < sizeof(c); i++) // проверка знака
+	for (int i = 0; i < sizeof(c); i++) // проверка знака умножения и деления
 	{
 		if (c[i] == "*")
 		{
 			a = stoi(c[i - 1]) * stoi(c[i + 1]); // идет подсчет выражения
 			z = i - 1; // координата числа для замены вместо выражения
 			c = min_func(c, b, a, z); // ф-ция
-			cout << c[0] << endl;
+			a = 0;
+			if (i == sizeof(c) - 1)
+			{
+				break;
+			}
+			
+			else
+			{
+				i = 0;
+			}
 		}
 
 		else if (c[i] == "/")
 		{
-			a = stoi(c[i - 1]) / stoi(c[i + 1]);
-			z = i - 1;
-			c = min_func(c, b, a, z);
-			cout << sizeof(c) << endl;
-			for (int i = 0; i < sizeof(c); i++)
+			a = stoi(c[i - 1]) / stoi(c[i + 1]); // идет подсчет выражения
+			z = i - 1; // координата числа для замены вместо выражения
+			c = min_func(c, b, a, z); // ф-ция
+			a = 0;
+			if (i == sizeof(c) - 1)
 			{
-				cout << c[i] << endl;
+				break;
+			}
+
+			else
+			{
+				i = 0;
 			}
 		}
 	}
 
-	for (int i = 0; i < sizeof(c); i++)
+	for (int i = 0; i < sizeof(c); i++) // проверка знака сложения и вычитания 
 	{
 		if (c[i] == "+")
 		{
-			a = stoi(c[i - 1]) + stoi(c[i + 1]);
-			z = i - 1;
-			c = min_func(c, b, a, z);
-			cout << sizeof(c) << endl;
-			for (int i = 0; i < sizeof(c); i++)
+			a = stoi(c[i - 1]) + stoi(c[i + 1]); // идет подсчет выражения
+			z = i - 1; // координата числа для замены вместо выражения
+			c = min_func(c, b, a, z); // ф-ция
+			a = 0;
+			if (i == sizeof(c) - 1)
 			{
-				cout << c[i] << endl;
+				break;
+			}
+
+			else
+			{
+				i = 0;
 			}
 		}
 		else if (c[i] == "-")
 		{
-			a = stoi(c[i - 1]) - stoi(c[i + 1]);
-			z = i - 1;
-			c = min_func(c, b, a, z);
-			cout << sizeof(c) << endl;
-			for (int i = 0; i < sizeof(c); i++)
+			a = stoi(c[i - 1]) - stoi(c[i + 1]); // идет подсчет выражения
+			z = i - 1; // координата числа для замены вместо выражения
+			c = min_func(c, b, a, z); // ф-ция
+			a = 0;
+			if (i == sizeof(c) - 1)
 			{
-				cout << c[i] << endl;
+				break;
+			}
+
+			else
+			{
+				i = 0;
 			}
 		}
 
