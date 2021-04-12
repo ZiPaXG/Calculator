@@ -11,10 +11,10 @@ using namespace std;
 
 string* parsing(int j, int& v, int n, string* x, string b, string a);
 string* plus_func(string* x, const int v);
-string* min_func(string* x, const int v, int a, int z);
-string check_skob(string* x, int v, string m[], int b);
-string proverka(string* x, int v, int x1, int x2, string m[], int b);
-string* min_sum(string* x, const int v);
+string* min_func(string* c, const int b, int a, int z);
+string check_skob(string* x, int v, string m, int b, int* x1, int* x2);
+string proverka(string* x, int v, int* x1, int* x2, string m, int b);
+string* min_sum(string* x, const int v, string m, int b1, int *x1);
 
 int main()
 {
@@ -24,9 +24,11 @@ int main()
 	string a;  // строка
 	string b;  // строка буфер
 	int b1 = 0;
+	int x1 = 0; // координата начала скобки
+	int x2 = 0;
 	int n = 0; // счетчик для массива в ф-ции del_func
 	int v = 1; // изначальный размер массива
-	string m[1]; // изначальный размер массива ф-ции proverka
+	string m; // изначальный размер массива ф-ции proverka
 
 	cout << "Введите выражение(без пробелов): " << endl;
 	getline(cin, a);
@@ -34,7 +36,10 @@ int main()
 	int j = a.size();
 	string* x = new string[v];
 	x = parsing(j, v, n, x, b, a);
-	m[0] = check_skob(x, v, m, b1);
+	m = check_skob(x, v, m, b1, &x1, &x2);
+	b1 = x2 - x1;
+	cout << v << endl;
+	/*x = min_sum(x, v, m, b1, &x1);*/
 }
 
 string* parsing(int j, int& v, int n, string* x, string b, string a)
@@ -44,7 +49,10 @@ string* parsing(int j, int& v, int n, string* x, string b, string a)
 		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
 		{
 			if (i < j - 1)
+			{
 				b.push_back(a[i]);
+			}
+
 			else
 			{
 				b.push_back(a[i]);
@@ -53,6 +61,24 @@ string* parsing(int j, int& v, int n, string* x, string b, string a)
 			}
 		}
 
+		else if ((a[i] == '(' || a[i] == ')' || a[i] == '*' || a[i] == '/' || a[i] == '+' || a[i] == '-') && (a[i + 1] == '(' || a[i + 1] == ')' || a[i + 1] == '*' || a[i + 1] == '/' || a[i + 1] == '+' || a[i + 1] == '-'))
+		{
+			x[n] = a[i];
+			x = plus_func(x, v);
+			n++;
+			v++;
+			x[n] = a[i + 1];
+			x = plus_func(x, v);
+			i++;
+			n++;
+			v++;
+		}
+
+		else if (i == j - 1)
+		{
+			x[n] = a[i];
+		}
+		
 		else
 		{
 			x[n] = b;
@@ -62,8 +88,8 @@ string* parsing(int j, int& v, int n, string* x, string b, string a)
 			n++;
 			x[n] = a[i];
 			x = plus_func(x, v);
-			v++;
 			n++;
+			v++;
 		}
 	}
 	return x;
@@ -122,47 +148,42 @@ string* min_func(string* c, const int b, int a, int z)
 	return c;
 }
 
-string check_skob(string* x, int v, string m[], int b)
+string check_skob(string* x, int v, string m, int b, int* x1, int* x2)
 {
-	int x1 = 0;
-	int x2 = 0;
-	int u = 0;
-
 	for (int i = 0; i < v; i++)
 	{
-		if (x1 != 0 && x2 != 0)
+		if (*x1 != 0 && *x2 != 0)
 		{
-			m[0] = proverka(x, v, x1, x2, m, b);
+			m = proverka(x, v, x1, x2, m, b);
 		}
 		
 		else if (x[i] == "(")
 		{
-			x1 = i;
+			*x1 = i;
 		}
 		
 		else if (x[i] == ")")
 		{
-			x2 = i;
+			*x2 = i;
 		}
 	}
 	
-	return m[0];
+	return m;
 }
 
-string proverka(string* x, int v, int x1, int x2, string m[], int b)
+string proverka(string* x, int v, int* x1, int* x2, string m, int b)
 {
 	int a = 0;
 	int z = 0;
 	int n = 0; // счетчик
 
-	for (int i = x1 + 1; i < x2; i++) // считаем размер массива скобок
+	for (int i = *x1 + 1; i < *x2; i++) // считаем размер массива скобок
 	{
 		b++;
 	}
-	
 	string* c = new string[b]; // здесь будет выражение, которое находится в скобках
 	
-	for (int i = x1 + 1; i < x2; i++) // копирование
+	for (int i = *x1 + 1; i < *x2; i++) // копирование
 	{
 		c[n] = x[i];
 		n++;
@@ -204,6 +225,7 @@ string proverka(string* x, int v, int x1, int x2, string m[], int b)
 			i = 0;
 			b -= 2;
 		}
+		
 		else if (c[i] == "-")
 		{
 			a = stoi(c[i - 1]) - stoi(c[i + 1]); // идет подсчет выражения
@@ -215,42 +237,13 @@ string proverka(string* x, int v, int x1, int x2, string m[], int b)
 		}
 
 	}
-	return c[0];
+	m = c[0];
+	return m;
 }
 
-//string* min_sum(string* x, const int v)
+//string* min_sum(string* x, const int v, string m, int b1, int* x1)
 //{
 //	//создание нового массива
 //	string* mas = new string[v - 2];
-//	int n = 0;
-//
-//	for (int i = 0; i < b; i++)
-//	{
-//		if (b == 3 && i == z)
-//		{
-//			mas[0] = to_string(a);
-//			cout << mas[0] << endl;
-//			break;
-//		}
-//
-//		else if (i == z)
-//		{
-//			mas[n] = to_string(a);
-//			cout << mas[n] << endl;
-//			n++;
-//			i += 2;
-//		}
-//
-//		else
-//		{
-//			mas[n] = c[i];
-//			cout << mas[n] << endl;
-//			n++;
-//		}
-//	}
-//	//удаление элементов массива c
-//	delete[]c;
-//	//копирование из буффера в нужный массив
-//	c = mas;
-//	return c;
+//	
 //}
