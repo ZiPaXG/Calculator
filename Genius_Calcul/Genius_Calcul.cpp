@@ -13,8 +13,9 @@ string* parsing(int j, int& v, int n, string* x, string b, string a);
 string* plus_func(string* x, const int v);
 string* min_func(string* c, const int b, int a, int z);
 string check_skob(string* x, int v, string m, int b, int* x1, int* x2);
-string proverka(string* x, int v, int* x1, int* x2, string m, int b);
+string proverka_skob(string* x, int v, int* x1, int* x2, string m, int b);
 string* min_sum(string* x, const int v, string m, int b1, int *x1);
+void proverka(string* x, int v, int b1, int* y);
 
 int main()
 {
@@ -28,6 +29,7 @@ int main()
 	int x2 = 0;
 	int n = 0; // счетчик для массива в ф-ции del_func
 	int v = 1; // изначальный размер массива
+	int y = 0;
 	string m; // изначальный размер массива ф-ции proverka
 
 	cout << "Введите выражение(без пробелов): " << endl;
@@ -36,24 +38,29 @@ int main()
 	int j = a.size();
 	string* x = new string[v];
 	x = parsing(j, v, n, x, b, a);
-	m = check_skob(x, v, m, b1, &x1, &x2);
+	m = check_skob(x, v+1, m, b1, &x1, &x2);
 	b1 = x2 - x1;
-	cout << v << endl;
-	/*x = min_sum(x, v, m, b1, &x1);*/
+	x = min_sum(x, v, m, b1, &x1);
+	proverka(x, v, b1, &y);
 }
 
 string* parsing(int j, int& v, int n, string* x, string b, string a)
 {
 	for (int i = 0; i < j; i++)
 	{
-		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-')
+		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-') // если это число
 		{
-			if (i < j - 1)
+			if (i < j - 1) // не последнее
 			{
 				b.push_back(a[i]);
+				x[n] = b;
+				b.clear();
+				x = plus_func(x, v);
+				n++;
+				v++;
 			}
 
-			else
+			else // последнее
 			{
 				b.push_back(a[i]);
 				x[n] = b;
@@ -61,37 +68,20 @@ string* parsing(int j, int& v, int n, string* x, string b, string a)
 			}
 		}
 
-		else if ((a[i] == '(' || a[i] == ')' || a[i] == '*' || a[i] == '/' || a[i] == '+' || a[i] == '-') && (a[i + 1] == '(' || a[i + 1] == ')' || a[i + 1] == '*' || a[i + 1] == '/' || a[i + 1] == '+' || a[i + 1] == '-'))
-		{
-			x[n] = a[i];
-			x = plus_func(x, v);
-			n++;
-			v++;
-			x[n] = a[i + 1];
-			x = plus_func(x, v);
-			i++;
-			n++;
-			v++;
-		}
-
 		else if (i == j - 1)
 		{
 			x[n] = a[i];
 		}
-		
-		else
+
+		else if (a[i] == '(' || a[i] == ')' || a[i] == '*' || a[i] == '/' || a[i] == '+' || a[i] == '-') // если это знак
 		{
-			x[n] = b;
-			b.clear();
-			x = plus_func(x, v);
-			v++;
-			n++;
 			x[n] = a[i];
 			x = plus_func(x, v);
 			n++;
 			v++;
 		}
 	}
+	
 	return x;
 }
 
@@ -154,7 +144,7 @@ string check_skob(string* x, int v, string m, int b, int* x1, int* x2)
 	{
 		if (*x1 != 0 && *x2 != 0)
 		{
-			m = proverka(x, v, x1, x2, m, b);
+			m = proverka_skob(x, v, x1, x2, m, b);
 		}
 		
 		else if (x[i] == "(")
@@ -171,7 +161,7 @@ string check_skob(string* x, int v, string m, int b, int* x1, int* x2)
 	return m;
 }
 
-string proverka(string* x, int v, int* x1, int* x2, string m, int b)
+string proverka_skob(string* x, int v, int* x1, int* x2, string m, int b)
 {
 	int a = 0;
 	int z = 0;
@@ -181,8 +171,8 @@ string proverka(string* x, int v, int* x1, int* x2, string m, int b)
 	{
 		b++;
 	}
-	string* c = new string[b]; // здесь будет выражение, которое находится в скобках
 	
+	string* c = new string[b]; // здесь будет выражение, которое находится в скобках
 	for (int i = *x1 + 1; i < *x2; i++) // копирование
 	{
 		c[n] = x[i];
@@ -237,13 +227,55 @@ string proverka(string* x, int v, int* x1, int* x2, string m, int b)
 		}
 
 	}
+	
 	m = c[0];
 	return m;
 }
 
-//string* min_sum(string* x, const int v, string m, int b1, int* x1)
-//{
-//	//создание нового массива
-//	string* mas = new string[v - 2];
-//	
-//}
+string* min_sum(string* x, const int v, string m, int b1, int* x1)
+{
+	//создание нового массива
+	string* mas = new string[v - b1];
+	for (int i = 0; i < v; i++)
+	{
+		if (i == *x1)
+		{
+			x[i] = m;
+			i += b1;
+		}
+		
+		else
+		{
+			x[i] = x[i];
+		}
+	}
+	
+	return x;
+}
+
+void proverka(string* x, int v, int b1, int* y)
+{
+	if (x[1] == "*")
+	{
+		*y = stoi(x[0]) * stoi(x[2]);
+		cout << *y << endl;
+	}
+	
+	else if (x[1] == "/")
+	{
+		*y = stoi(x[0]) / stoi(x[2]);
+		cout << *y << endl;
+	}
+	
+	else if (x[1] == "+")
+	{
+		*y = stoi(x[0]) + stoi(x[2]);
+		cout << *y << endl;
+	}
+	
+	else if (x[1] == "-")
+	{
+		*y = stoi(x[0]) - stoi(x[2]);
+		cout << *y << endl;
+	}
+}
