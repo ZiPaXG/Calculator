@@ -9,13 +9,13 @@
 
 using namespace std;
 
-string* parsing(int j, int& v, int n, string* x, string b, string a);
-string* plus_func(string* x, const int v);
-string* min_func(string* c, const int b, int a, int z);
-string check_skob(string* x, int v, string m, int b, int* x1, int* x2);
-string proverka_skob(string* x, int v, int* x1, int* x2, string m, int b);
-string* min_sum(string* x, const int v, string m, int b1, int *x1);
-void proverka(string* x, int v, int b1, int* y);
+string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1); // разделение знаков и чисел
+string* plus_func(string* x, const int v); // увеличение массива на 1
+string* min_func(string* c, const int b, int a, int z); // уменьшение выражения в скобках
+string check_skob(string* x, int v, string m, int b, int* x1, int* x2); // ищем координаты скобок
+string proverka_skob(string* x, int v, int* x1, int* x2, string m, int b); // считаем скобку
+string* min_sum(string* x, const int v, string m, int b1, int *x1); // удаляем выражение со скобкой
+void proverka(string* x, int v, int b1); // считаем оставшиеся числа
 
 int main()
 {
@@ -30,6 +30,7 @@ int main()
 	int n = 0; // счетчик для массива в ф-ции del_func
 	int v = 1; // изначальный размер массива
 	int y = 0;
+	int y1 = 0; //определяем есть ли у нас скобки
 	string m; // изначальный размер массива ф-ции proverka
 
 	cout << "Введите выражение(без пробелов): " << endl;
@@ -37,14 +38,25 @@ int main()
 
 	int j = a.size();
 	string* x = new string[v];
-	x = parsing(j, v, n, x, b, a);
-	m = check_skob(x, v+1, m, b1, &x1, &x2);
-	b1 = x2 - x1;
-	x = min_sum(x, v, m, b1, &x1);
-	proverka(x, v, b1, &y);
+	x = parsing(j, v, n, x, b, a, &y1);
+	if (y1 != 0)
+	{
+		for (int i = 0; i < y1; i++)
+		{
+			m = check_skob(x, v + 1, m, b1, &x1, &x2);
+			b1 = x2 - x1;
+			x = min_sum(x, v, m, b1, &x1);
+			
+		}
+	}
+	
+	else
+	{
+		proverka(x, v, b1);
+	}
 }
 
-string* parsing(int j, int& v, int n, string* x, string b, string a)
+string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1)
 {
 	for (int i = 0; i < j; i++)
 	{
@@ -75,10 +87,22 @@ string* parsing(int j, int& v, int n, string* x, string b, string a)
 
 		else if (a[i] == '(' || a[i] == ')' || a[i] == '*' || a[i] == '/' || a[i] == '+' || a[i] == '-') // если это знак
 		{
-			x[n] = a[i];
-			x = plus_func(x, v);
-			n++;
-			v++;
+			if (a[i] == '(')
+			{
+				*y1 += 1;
+				x[n] = a[i];
+				x = plus_func(x, v);
+				n++;
+				v++;
+			}
+
+			else
+			{
+				x[n] = a[i];
+				x = plus_func(x, v);
+				n++;
+				v++;
+			}
 		}
 	}
 	
@@ -253,29 +277,55 @@ string* min_sum(string* x, const int v, string m, int b1, int* x1)
 	return x;
 }
 
-void proverka(string* x, int v, int b1, int* y)
+void proverka(string* x, int v, int b1)
 {
-	if (x[1] == "*")
+	int z = 0;
+	int y = 0;
+	for (int i = 0; i < v; i++)
 	{
-		*y = stoi(x[0]) * stoi(x[2]);
-		cout << *y << endl;
+		if (x[i] == "*")
+		{
+			y = stoi(x[i - 1]) * stoi(x[i + 1]);
+			z = i - 1;
+			x = min_func(x, v, y, z);
+			v -= 2;
+		}
+		else if (x[i] == "/")
+		{
+			y = stoi(x[i - 1]) / stoi(x[i + 1]);
+			z = i - 1;
+			x = min_func(x, v, y, z);
+			v -= 2;
+		}
+		else if (x[i] == "+")
+		{
+			y = stoi(x[i - 1]) + stoi(x[i + 1]);
+			z = i - 1;
+			x = min_func(x, v, y, z);
+			v -= 2;
+		}
+		else if (x[i] == "-")
+		{
+			y = stoi(x[i - 1]) - stoi(x[i + 1]);
+			z = i - 1;
+			x = min_func(x, v, y, z);
+			v -= 2;
+		}
 	}
-	
-	else if (x[1] == "/")
-	{
-		*y = stoi(x[0]) / stoi(x[2]);
-		cout << *y << endl;
-	}
-	
-	else if (x[1] == "+")
-	{
-		*y = stoi(x[0]) + stoi(x[2]);
-		cout << *y << endl;
-	}
-	
-	else if (x[1] == "-")
-	{
-		*y = stoi(x[0]) - stoi(x[2]);
-		cout << *y << endl;
-	}
+
+	//string* mas = new string[v - 2];
+
+	//for (int i = 0; i < v; i++)
+	//{
+	//	if (i == z)
+	//	{
+	//		mas[i] = y;
+	//		i += 2;
+	//	}
+
+	//	else
+	//	{
+	//		mas[i] = x[i];
+	//	}
+	//}
 }
