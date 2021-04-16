@@ -25,8 +25,8 @@ int main()
 	string a;  // строка
 	string b;  // строка буфер
 	int b1 = 0;
-	int x1 = 0; // координата начала скобки
-	int x2 = 0;
+	int x1 = -1; // координата начала скобки
+	int x2 = -1; // координата конца скобки
 	int n = 0; // счетчик для массива в ф-ции del_func
 	int v = 1; // изначальный размер массива
 	int y = 0;
@@ -39,13 +39,14 @@ int main()
 	int j = a.size();
 	string* x = new string[v];
 	x = parsing(j, v, n, x, b, a, &y1);
+	
 	if (y1 != 0)
 	{
 		for (int i = 0; i < y1; i++)
 		{
-			m = check_skob(x, v + 1, m, b1, &x1, &x2);
-			b1 = x2 - x1;
-			x = min_sum(x, v, m, b1, &x1);
+			m = check_skob(x, v, m, b1, &x1, &x2);
+			//b1 = x2 - x1;
+			//x = min_sum(x, v, m, b1, &x1);
 			
 		}
 	}
@@ -65,13 +66,8 @@ string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1)
 			if (i < j - 1) // не последнее
 			{
 				b.push_back(a[i]);
-				x[n] = b;
-				b.clear();
-				x = plus_func(x, v);
-				n++;
-				v++;
 			}
-
+			
 			else // последнее
 			{
 				b.push_back(a[i]);
@@ -98,6 +94,11 @@ string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1)
 
 			else
 			{
+				x[n] = b;
+				b.clear();
+				x = plus_func(x, v);
+				n++;
+				v++;
 				x[n] = a[i];
 				x = plus_func(x, v);
 				n++;
@@ -166,7 +167,7 @@ string check_skob(string* x, int v, string m, int b, int* x1, int* x2)
 {
 	for (int i = 0; i < v; i++)
 	{
-		if (*x1 != 0 && *x2 != 0)
+		if (*x1 != -1 && *x2 != -1)
 		{
 			m = proverka_skob(x, v, x1, x2, m, b);
 		}
@@ -174,6 +175,12 @@ string check_skob(string* x, int v, string m, int b, int* x1, int* x2)
 		else if (x[i] == "(")
 		{
 			*x1 = i;
+		}
+		
+		else if (i == v-1 && x[i] == ")")
+		{
+			*x2 = i;
+			m = proverka_skob(x, v, x1, x2, m, b);
 		}
 		
 		else if (x[i] == ")")
@@ -196,6 +203,7 @@ string proverka_skob(string* x, int v, int* x1, int* x2, string m, int b)
 		b++;
 	}
 	
+	cout << b << endl;
 	string* c = new string[b]; // здесь будет выражение, которое находится в скобках
 	for (int i = *x1 + 1; i < *x2; i++) // копирование
 	{
@@ -289,6 +297,7 @@ void proverka(string* x, int v, int b1)
 			z = i - 1;
 			x = min_func(x, v, y, z);
 			v -= 2;
+			i = 0;
 		}
 		else if (x[i] == "/")
 		{
@@ -296,6 +305,7 @@ void proverka(string* x, int v, int b1)
 			z = i - 1;
 			x = min_func(x, v, y, z);
 			v -= 2;
+			i = 0;
 		}
 		else if (x[i] == "+")
 		{
@@ -303,6 +313,7 @@ void proverka(string* x, int v, int b1)
 			z = i - 1;
 			x = min_func(x, v, y, z);
 			v -= 2;
+			i = 0;
 		}
 		else if (x[i] == "-")
 		{
@@ -310,22 +321,7 @@ void proverka(string* x, int v, int b1)
 			z = i - 1;
 			x = min_func(x, v, y, z);
 			v -= 2;
+			i = 0;
 		}
 	}
-
-	//string* mas = new string[v - 2];
-
-	//for (int i = 0; i < v; i++)
-	//{
-	//	if (i == z)
-	//	{
-	//		mas[i] = y;
-	//		i += 2;
-	//	}
-
-	//	else
-	//	{
-	//		mas[i] = x[i];
-	//	}
-	//}
 }
