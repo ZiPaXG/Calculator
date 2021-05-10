@@ -12,7 +12,7 @@ using namespace std;
 string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1); // разделение знаков и чисел
 string* plus_func(string* x, const int v); // увеличение массива на 1
 string* min_func(string* c, const int b, int a, int z); // уменьшение выражения в скобках
-string check_skob(string* x, int v, string m, int b, int* x1, int* x2); // ищем координаты скобок
+string check_skob(string* x, int v, string m, int b, int* x1, int* x2, string& a); // ищем координаты скобок
 string proverka_skob(string* x, int v, int* x1, int* x2, string m, int b); // считаем скобку
 string* min_sum(string* x, const int v, string m, int b1, int *x1); // удаляем выражение со скобкой
 void proverka(string* x, int v, int b1, int* y); // считаем оставшиеся числа
@@ -44,7 +44,7 @@ int main()
 	{
 		for (int i = 0; i < y1; i++)
 		{
-			m = check_skob(x, v, m, b1, &x1, &x2);
+			m = check_skob(x, v, m, b1, &x1, &x2, a);
 			b1 = x2 - x1;
 			x = min_sum(x, v, m, b1, &x1);	
 			v = v - b1 - 1;
@@ -79,12 +79,7 @@ string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1)
 				b.clear();
 			}
 		}
-		//отрицательное число
-		//else if (a[i] == '-' && a[i - 1] == '(' || a[i - 1] == ')' || a[i - 1] == '*' || a[i - 1] == '/' || a[i - 1] == '+')
-		//{
-		//	b.push_back(a[i]);
-		//}
-
+		
 		else if (a[i] == '(' || a[i] == ')' || a[i] == '*' || a[i] == '/' || a[i] == '+' || a[i] == '-') // если это знак
 		{
 			if (a[i] == '(')
@@ -96,7 +91,7 @@ string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1)
 				n++;
 				v++;
 			}
-
+			
 			else
 			{
 				x[n] = b;
@@ -167,10 +162,10 @@ string* min_func(string* c, const int b, int a, int z)
 	return c;
 }
 
-string check_skob(string* x, int v, string m, int b, int* x1, int* x2)
+string check_skob(string* x, int v, string m, int b, int* x1, int* x2, string& a)
 {
 	for (int i = 0; i < v; i++)
-	{
+	{	
 		if (i == v - 1 && x[i] == ")")
 		{
 			*x2 = i;
@@ -317,7 +312,11 @@ void proverka(string* x, int v, int b1, int* y)
 			v -= 2;
 			i = 0;
 		}
-		else if (x[i] == "+")
+	}
+	
+	for (int i = 0; i < v; i++)
+	{
+		if (x[i] == "+")
 		{
 			*y = stoi(x[i - 1]) + stoi(x[i + 1]);
 			z = i - 1;
