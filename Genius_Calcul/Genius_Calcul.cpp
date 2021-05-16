@@ -9,7 +9,7 @@
 
 using namespace std;
 
-string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1); // разделение знаков и чисел
+string* parsing(int j, int& v, int n, string* x, string b, string a); // разделение знаков и чисел
 string* plus_func(string* x, const int v); // увеличение массива на 1
 string* min_func(string* c, const int b, int a, int z); // уменьшение выражения в скобках
 string check_skob(string* x, int v, string m, int b, int* x1, int* x2, string& a); // ищем координаты скобок
@@ -29,20 +29,49 @@ int main()
 	int x2 = -1; // координата конца скобки
 	int n = 0; // счетчик для массива в ф-ции del_func
 	int v = 1; // изначальный размер массива
+	int s1 = 0; //первая скобка
+	int s2 = 0; //вторая скобка
 	int y = 0;
-	int y1 = 0; //определяем есть ли у нас скобки
+	int j = 0;
 	string m; // изначальный размер массива ф-ции proverka
 
-	cout << "Введите выражение(без пробелов): " << endl;
-	getline(cin, a);
-
-	int j = a.size();
-	string* x = new string[v];
-	x = parsing(j, v, n, x, b, a, &y1);
-
-	if (y1 != 0)
+	while (true) // проверка на скобку
 	{
-		for (int i = 0; i < y1; i++)
+		cout << "Введите выражение(без пробелов): " << endl;
+		getline(cin, a);
+
+		j = a.size();
+		for (int i = 0; i < j; i++)
+		{
+			if (a[i] == '(')
+			{
+				s1 += 1;
+			}
+			else if (a[i] == ')')
+			{
+				s2 += 1;
+			}
+		}
+		
+		if (s1 != s2)
+		{
+			cout << "Вы ввели выражение неправильно!" << endl;
+			s1 = 0;
+			s2 = 0;
+			a = "";
+		}
+
+		else
+		{
+			break;
+		}
+	}
+	string* x = new string[v];
+	x = parsing(j, v, n, x, b, a);
+
+	if (s1 != 0)
+	{
+		for (int i = 0; i < s1; i++)
 		{
 			m = check_skob(x, v, m, b1, &x1, &x2, a);
 			b1 = x2 - x1;
@@ -57,11 +86,12 @@ int main()
 	{
 		proverka(x, v, b1, &y);
 	}
-	cout << y << endl;
+	cout << "Ответ: " << y << endl;
 }
 
-string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1)
+string* parsing(int j, int& v, int n, string* x, string b, string a)
 {
+	int y2 = 0;
 	for (int i = 0; i < j; i++)
 	{
 		if (a[i] != '(' && a[i] != ')' && a[i] != '*' && a[i] != '/' && a[i] != '+' && a[i] != '-') // если это число
@@ -84,7 +114,6 @@ string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1)
 		{
 			if (a[i] == '(')
 			{
-				*y1 += 1;
 				x[n] = a[i];
 				cout << "x[n] " << x[n] << endl;
 				x = plus_func(x, v);
@@ -108,7 +137,7 @@ string* parsing(int j, int& v, int n, string* x, string b, string a, int* y1)
 			}
 		}
 	}
-	
+
 	return x;
 }
 
@@ -155,6 +184,7 @@ string* min_func(string* c, const int b, int a, int z)
 			n++;
 		}
 	}
+	
 	//удаление элементов массива c
 	delete[]c;
 	//копирование из буффера в нужный массив
@@ -241,7 +271,6 @@ string proverka_skob(string* x, int v, int* x1, int* x2, string m, int b)
 		if (c[i] == "+")
 		{
 			a = stoi(c[i - 1]) + stoi(c[i + 1]); // идет подсчет выражения
-			cout << a << endl;
 			z = i - 1; // координата числа для замены вместо выражения
 			c = min_func(c, b, a, z); // ф-ция
 			a = 0;
