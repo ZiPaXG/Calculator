@@ -4,10 +4,16 @@
 #include <vector>
 #include <map>
 #include <functional>
+//#include <algorithm>
 
 bool parsingExpression(std::vector<std::string>& expressionInVect, std::string expression); // Разбиение строки на элементы vector
 bool checkBrackets(std::vector<std::string> expressionInVect); // Проверка на корректность скобок
 void calculate(std::vector<std::string>& expressionInVect); // Вычисление выражения
+std::pair<int, int> getNestedBracketsPos(std::vector<std::string> expressionInVect); // Поиск самой вложенной скобки
+float solveSomeExpression(std::vector<std::string> expressionInVect); // Подсчет промежуточного выражения
+
+
+std::map<std::string, std::function<float(float, float)>> operations; // Словарь для определения операций
 
 int main()
 {
@@ -16,15 +22,15 @@ int main()
 
 	std::string expression;  // Строка с выражением
 	std::vector<std::string> expressionInVect; // Вектор с элементами мат. выражения
-	std::map<char, std::function<float(float, float)>> operations; // Словарь для определения операций
+	
 
 	// Объявление операций
-	operations['+'] = [](float a, float b) { return a + b; };
-	operations['-'] = [](float a, float b) { return a - b; };
-	operations['*'] = [](float a, float b) { return a * b; };
-	operations['/'] = [](float a, float b) { 
+	operations["+"] = [](float a, float b) { return a + b; };
+	operations["-"] = [](float a, float b) { return a - b; };
+	operations["*"] = [](float a, float b) { return a * b; };
+	operations["/"] = [](float a, float b) {
 		if (b == 0)
-			throw std::runtime_error("Divide by zero!");
+			throw std::runtime_error("Деление на ноль!");
 		return a / b;
 	};
 
@@ -58,7 +64,7 @@ int main()
 
 
 	// Подсчет выражения
-	//calculate(expressionInVect);
+	calculate(expressionInVect);
 }
 
 #include <vector>
@@ -125,10 +131,65 @@ bool checkBrackets(std::vector<std::string> expressionInVect)
 	return counterBrackets == 0;
 }
 
+// Подсчет поэтапно:
+// 1. Поиск самой вложенной скобки
+// 2. Решения выражения в скобке
+// 3. Последовательное раскрытие остальных скобок
+// 4. Подсчет итогового выражения
 void calculate(std::vector<std::string>& expressionInVect)
 {
-	for (std::string sym : expressionInVect)
+	std::pair<int, int> brackets_pos;
+	while (true)
 	{
-		
+		brackets_pos = getNestedBracketsPos(expressionInVect);
+		if (brackets_pos.first != -1)
+		{
+			std::vector<std::string> buf_expression(brackets_pos.second - brackets_pos.first);
+			std::copy(expressionInVect.begin() + brackets_pos.first + 1, expressionInVect.begin() + brackets_pos.second, buf_expression.begin());
+			solveSomeExpression(buf_expression);
+		}
 	}
+}
+
+std::pair<int, int> getNestedBracketsPos(std::vector<std::string> expressionInVect)
+{
+	std::pair<int, int> brackets_pos;
+
+	for (int i = expressionInVect.size() - 1; i >= 0; i--)
+	{
+		if (expressionInVect[i] == "(")
+		{
+			brackets_pos.first = i;
+			break;
+		}
+	}
+
+	if (brackets_pos.first == -1)
+		return { -1, -1 };
+
+	for (int i = brackets_pos.first; i < expressionInVect.size(); i++)
+	{
+		if (expressionInVect[i] == ")")
+		{
+			brackets_pos.second = i;
+			return brackets_pos;
+		}
+	}
+
+	return { -1, -1 };
+}
+
+float solveSomeExpression(std::vector<std::string> expressionInVect)
+{
+	float result;
+	for (int i = 1; i < expressionInVect.size() - 1; i += 2)
+	{
+		result = 0;
+		if (expressionInVect[i] == "*" || expressionInVect[i] == "/")
+		{
+			result = operations[expressionInVect[i]](stof(expressionInVect[i - 1]), stof(expressionInVect[i + 1]));
+			std::cout << result << std::endl;
+		}
+	}
+	return 0;
 }

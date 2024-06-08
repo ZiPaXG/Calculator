@@ -1,3 +1,5 @@
 ﻿  Genius_Calcul.cpp
-D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(73,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(79,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(170,37): warning C4018: <: несоответствие типов со знаком и без знака
+D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(185,20): warning C4018: <: несоответствие типов со знаком и без знака
   Genius_Calcul.vcxproj -> D:\C++\Calculator\Debug\Genius_Calcul.exe
