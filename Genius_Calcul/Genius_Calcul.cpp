@@ -5,9 +5,9 @@
 #include <map>
 #include <functional>
 
-void parsingExpression(std::vector<std::string>& expressionInVect, std::string expression); // Разбиение строки на элементы vector
-bool checkBrackets(std::vector<std::string> expressionInVect);
-float calculate(std::vector<std::string> expressionInVect);
+bool parsingExpression(std::vector<std::string>& expressionInVect, std::string expression); // Разбиение строки на элементы vector
+bool checkBrackets(std::vector<std::string> expressionInVect); // Проверка на корректность скобок
+void calculate(std::vector<std::string>& expressionInVect); // Вычисление выражения
 
 int main()
 {
@@ -35,29 +35,77 @@ int main()
 	{
 		std::cin >> expression;
 
-		parsingExpression(expressionInVect, expression);
+		if (!parsingExpression(expressionInVect, expression))
+		{
+			std::cout << "Неккорректно введено выражение! Повторите ввод: " << std::endl;
+			expressionInVect.clear();
+			continue;
+		}
 
 		if (!checkBrackets(expressionInVect))
 		{
 			std::cout << "Неккорректно введены скобки! Повторите ввод: " << std::endl;
 			expressionInVect.clear();
+			continue;
 		}
-		else
-			break;
+
+		break;
 	}
+
+	// Контрольная проверка
+	for (std::string str : expressionInVect)
+		std::cout << str << std::endl;
+
 
 	// Подсчет выражения
-
+	//calculate(expressionInVect);
 }
 
-void parsingExpression(std::vector<std::string>& expressionInVect, std::string expression)
-{
-	int countSymbols = 0; // Счетчик символов. Если будет два символа подряд - ошибка
-	for (char sym : expression)
-	{
-		expressionInVect.push_back(std::string(1, sym));
+#include <vector>
+#include <string>
+
+bool parsingExpression(std::vector<std::string>& expressionInVect, std::string expression) {
+	std::string string_nums;
+	const std::string symbols = "+-*/().1234567890"; // Допустимые символы
+
+	bool expectNum = true;
+
+	for (int i = 0; i < expression.size(); ++i) {
+		char sym = expression[i];
+
+		if (symbols.find(sym) == std::string::npos)
+			return false;
+
+		if (isdigit(sym)) {
+			string_nums.push_back(sym);
+			expectNum = false;
+		}
+
+		else {
+			// Обработка отрицательных чисел
+			if (sym == '-' && expectNum) {
+				string_nums.push_back(sym);
+			}
+			else {
+				if (!string_nums.empty()) {
+					expressionInVect.push_back(string_nums);
+					string_nums.clear();
+				}
+				expressionInVect.push_back(std::string(1, sym));
+				expectNum = (sym != ')');
+			}
+		}
 	}
+
+	// Сохранение последнего накопленного числа
+	if (!string_nums.empty()) {
+		expressionInVect.push_back(string_nums);
+	}
+
+	return true;
 }
+
+
 
 bool checkBrackets(std::vector<std::string> expressionInVect)
 {
@@ -77,11 +125,10 @@ bool checkBrackets(std::vector<std::string> expressionInVect)
 	return counterBrackets == 0;
 }
 
-float calculate(std::vector<std::string> expressionInVect)
+void calculate(std::vector<std::string>& expressionInVect)
 {
 	for (std::string sym : expressionInVect)
 	{
 		
 	}
-	return 0;
 }
