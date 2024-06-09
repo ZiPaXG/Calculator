@@ -86,6 +86,9 @@ bool parsingExpression(std::vector<std::string>& expressionInVect, std::string e
 			if (sym == '-' && expectNum) {
 				string_nums.push_back(sym);
 			}
+			else if (sym == '.' && !string_nums.empty()) {
+				string_nums.push_back(sym);
+			}
 			else {
 				if (!string_nums.empty()) {
 					expressionInVect.push_back(string_nums);
@@ -187,8 +190,7 @@ double solveSomeExpression(std::vector<std::string> someExpression)
 	float result;
 	auto performOperation = [&](int i) {
 		result = operations[someExpression[i]](stof(someExpression[i - 1]), stof(someExpression[i + 1])); // Округление до 3 знаков после запятой
-
-		someExpression.insert(someExpression.begin() + i - 1, std::to_string(result).substr(0, 4));
+		someExpression.insert(someExpression.begin() + i - 1, std::to_string(result));
 		someExpression.erase(someExpression.begin() + i, someExpression.begin() + i + 3);
 	};
 
