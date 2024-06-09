@@ -1,7 +1,9 @@
-﻿  Genius_Calcul.cpp
-D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(73,20): warning C4018: <: несоответствие типов со знаком и без знака
-D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(147,37): warning C4244: =: преобразование "double" в "float", возможна потеря данных
-D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(153,37): warning C4244: =: преобразование "double" в "float", возможна потеря данных
-D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(176,37): warning C4018: <: несоответствие типов со знаком и без знака
-D:\C++\Calculator\Genius_Calcul\Genius_Calcul.cpp(199,12): warning C4018: <: несоответствие типов со знаком и без знака
+﻿  Calculator.cpp
+D:\C++\Calculator\Genius_Calcul\Calculator.cpp(30,20): warning C4018: <: несоответствие типов со знаком и без знака
+D:\C++\Calculator\Genius_Calcul\Calculator.cpp(102,37): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+D:\C++\Calculator\Genius_Calcul\Calculator.cpp(108,37): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+D:\C++\Calculator\Genius_Calcul\Calculator.cpp(131,37): warning C4018: <: несоответствие типов со знаком и без знака
+D:\C++\Calculator\Genius_Calcul\Calculator.cpp(154,12): warning C4018: <: несоответствие типов со знаком и без знака
+  Genius_Calcul.cpp
+  Создание кода...
   Genius_Calcul.vcxproj -> D:\C++\Calculator\Debug\Genius_Calcul.exe
