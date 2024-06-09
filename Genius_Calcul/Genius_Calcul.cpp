@@ -4,16 +4,22 @@
 #include <vector>
 #include <map>
 #include <functional>
-//#include <algorithm>
+#include <algorithm>
+#include <iomanip>
 
 bool parsingExpression(std::vector<std::string>& expressionInVect, std::string expression); // Разбиение строки на элементы vector
-bool checkBrackets(std::vector<std::string> expressionInVect); // Проверка на корректность скобок
+bool checkBrackets(const std::vector<std::string> expressionInVect); // Проверка на корректность скобок
 void calculate(std::vector<std::string>& expressionInVect); // Вычисление выражения
 std::pair<int, int> getNestedBracketsPos(std::vector<std::string> expressionInVect); // Поиск самой вложенной скобки
-float solveSomeExpression(std::vector<std::string> expressionInVect); // Подсчет промежуточного выражения
+double solveSomeExpression(std::vector<std::string> someExpression); // Подсчет промежуточного выражения
 
 
-std::map<std::string, std::function<float(float, float)>> operations; // Словарь для определения операций
+std::map<std::string, std::function<float(float, float)>> operations = {
+	{"+", std::plus<float>()},
+	{"-", std::minus<float>()},
+	{"*", std::multiplies<float>()},
+	{"/", std::divides<float>()}
+};
 
 int main()
 {
@@ -22,17 +28,6 @@ int main()
 
 	std::string expression;  // Строка с выражением
 	std::vector<std::string> expressionInVect; // Вектор с элементами мат. выражения
-	
-
-	// Объявление операций
-	operations["+"] = [](float a, float b) { return a + b; };
-	operations["-"] = [](float a, float b) { return a - b; };
-	operations["*"] = [](float a, float b) { return a * b; };
-	operations["/"] = [](float a, float b) {
-		if (b == 0)
-			throw std::runtime_error("Деление на ноль!");
-		return a / b;
-	};
 
 	std::cout << "Введите мат. выражение (без пробелов): " << std::endl;
 
@@ -59,16 +54,15 @@ int main()
 	}
 
 	// Контрольная проверка
-	for (std::string str : expressionInVect)
-		std::cout << str << std::endl;
+	//for (std::string str : expressionInVect)
+	//	std::cout << str << std::endl;
 
 
 	// Подсчет выражения
 	calculate(expressionInVect);
-}
 
-#include <vector>
-#include <string>
+	printf("Результат: %.2f", stof(expressionInVect[0]));
+}
 
 bool parsingExpression(std::vector<std::string>& expressionInVect, std::string expression) {
 	std::string string_nums;
@@ -116,16 +110,16 @@ bool parsingExpression(std::vector<std::string>& expressionInVect, std::string e
 bool checkBrackets(std::vector<std::string> expressionInVect)
 {
 	int counterBrackets = 0; // Счетчик скобок. Если будет отрицательное число - неправильно проставлены скобки
-
+	
 	for (std::string sym : expressionInVect)
 	{
-		if (counterBrackets < 0)
-			return false;
-
 		if (sym == "(")
 			counterBrackets++;
 		else if (sym == ")")
 			counterBrackets--;
+		
+		if (counterBrackets < 0)
+			return false;
 	}
 
 	return counterBrackets == 0;
@@ -139,21 +133,30 @@ bool checkBrackets(std::vector<std::string> expressionInVect)
 void calculate(std::vector<std::string>& expressionInVect)
 {
 	std::pair<int, int> brackets_pos;
-	while (true)
+	float temp_result = 0;
+	while (expressionInVect.size() > 1)
 	{
 		brackets_pos = getNestedBracketsPos(expressionInVect);
 		if (brackets_pos.first != -1)
 		{
-			std::vector<std::string> buf_expression(brackets_pos.second - brackets_pos.first);
+			std::vector<std::string> buf_expression(brackets_pos.second - brackets_pos.first - 1);
 			std::copy(expressionInVect.begin() + brackets_pos.first + 1, expressionInVect.begin() + brackets_pos.second, buf_expression.begin());
-			solveSomeExpression(buf_expression);
+			temp_result = solveSomeExpression(buf_expression);
+			expressionInVect.insert(expressionInVect.begin() + brackets_pos.first, std::to_string(temp_result));
+			expressionInVect.erase(expressionInVect.begin() + brackets_pos.first + 1, expressionInVect.begin() + brackets_pos.second + 2);
+		}
+		else
+		{
+			temp_result = solveSomeExpression(expressionInVect);
+			expressionInVect.insert(expressionInVect.begin(), std::to_string(temp_result));
+			expressionInVect.erase(expressionInVect.begin() + 1, expressionInVect.end());
 		}
 	}
 }
 
-std::pair<int, int> getNestedBracketsPos(std::vector<std::string> expressionInVect)
+std::pair<int, int> getNestedBracketsPos(const std::vector<std::string> expressionInVect)
 {
-	std::pair<int, int> brackets_pos;
+	std::pair<int, int> brackets_pos = { -1, -1 };
 
 	for (int i = expressionInVect.size() - 1; i >= 0; i--)
 	{
@@ -165,7 +168,7 @@ std::pair<int, int> getNestedBracketsPos(std::vector<std::string> expressionInVe
 	}
 
 	if (brackets_pos.first == -1)
-		return { -1, -1 };
+		return brackets_pos;
 
 	for (int i = brackets_pos.first; i < expressionInVect.size(); i++)
 	{
@@ -179,17 +182,31 @@ std::pair<int, int> getNestedBracketsPos(std::vector<std::string> expressionInVe
 	return { -1, -1 };
 }
 
-float solveSomeExpression(std::vector<std::string> expressionInVect)
+double solveSomeExpression(std::vector<std::string> someExpression)
 {
 	float result;
-	for (int i = 1; i < expressionInVect.size() - 1; i += 2)
-	{
-		result = 0;
-		if (expressionInVect[i] == "*" || expressionInVect[i] == "/")
+	auto performOperation = [&](int i) {
+		result = operations[someExpression[i]](stof(someExpression[i - 1]), stof(someExpression[i + 1])); // Округление до 3 знаков после запятой
+
+		someExpression.insert(someExpression.begin() + i - 1, std::to_string(result).substr(0, 4));
+		someExpression.erase(someExpression.begin() + i, someExpression.begin() + i + 3);
+	};
+
+	auto proccessOperators = [&](const std::vector<std::string> operations) {
+		int i = 1;
+		while (i < someExpression.size() - 1)
 		{
-			result = operations[expressionInVect[i]](stof(expressionInVect[i - 1]), stof(expressionInVect[i + 1]));
-			std::cout << result << std::endl;
+			if (std::find(operations.begin(), operations.end(), someExpression[i]) != operations.end())
+			{
+				performOperation(i);
+				continue;
+			}
+			i += 2;
 		}
-	}
-	return 0;
+	};
+
+	proccessOperators({ "*", "/" });
+	proccessOperators({ "+", "-" });
+
+	return stof(someExpression[0]);
 }
